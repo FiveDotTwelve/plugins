@@ -20,6 +20,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private boolean indoorEnabled = true;
   private Object initialMarkers;
   private Object initialPolygons;
+  private Object initialGroundOverlays;
   private Object initialPolylines;
   private Object initialCircles;
   private Rect padding = new Rect(0, 0, 0, 0);
@@ -35,6 +36,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setTrackCameraPosition(trackCameraPosition);
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolygons(initialPolygons);
+    controller.setInitialGroundOverlays(initialGroundOverlays);
     controller.setInitialPolylines(initialPolylines);
     controller.setInitialCircles(initialCircles);
     controller.setPadding(padding.top, padding.left, padding.bottom, padding.right);
@@ -128,6 +130,11 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   @Override
   public void setInitialPolygons(Object initialPolygons) {
     this.initialPolygons = initialPolygons;
+  }
+
+  @Override
+  public void setInitialGroundOverlays(Object initialGroundOverlays) {
+    this.initialGroundOverlays = initialGroundOverlays;
   }
 
   @Override

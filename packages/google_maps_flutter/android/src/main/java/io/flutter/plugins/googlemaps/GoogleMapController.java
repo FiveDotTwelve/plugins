@@ -27,6 +27,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -53,6 +54,7 @@ final class GoogleMapController
         GoogleMap.OnInfoWindowClickListener,
         GoogleMap.OnMarkerClickListener,
         GoogleMap.OnPolygonClickListener,
+        GoogleMap.OnGroundOverlayClickListener,
         GoogleMap.OnPolylineClickListener,
         GoogleMap.OnCircleClickListener,
         GoogleMapOptionsSink,
@@ -80,10 +82,12 @@ final class GoogleMapController
   private final Context context;
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
+  private final GroundOverlaysController groundOverlaysController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
+  private List<Object> initialGroundOverlays;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
 
@@ -105,6 +109,7 @@ final class GoogleMapController
     this.registrarActivityHashCode = registrar.activity().hashCode();
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel);
+    this.groundOverlaysController = new GroundOverlaysController(methodChannel);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel);
   }
@@ -178,6 +183,7 @@ final class GoogleMapController
     googleMap.setOnCameraIdleListener(this);
     googleMap.setOnMarkerClickListener(this);
     googleMap.setOnPolygonClickListener(this);
+    googleMap.setOnGroundOverlayClickListener(this);
     googleMap.setOnPolylineClickListener(this);
     googleMap.setOnCircleClickListener(this);
     googleMap.setOnMapClickListener(this);
@@ -185,10 +191,12 @@ final class GoogleMapController
     updateMyLocationSettings();
     markersController.setGoogleMap(googleMap);
     polygonsController.setGoogleMap(googleMap);
+    groundOverlaysController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
+    updateInitialGroundOverlays();
     updateInitialPolylines();
     updateInitialCircles();
   }
@@ -260,6 +268,17 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "groundOverlays#update":
+      {
+        Object groundOverlaysToAdd = call.argument("groundOverlaysToAdd");
+        groundOverlaysController.addGroundOverlays((List<Object>) groundOverlaysToAdd);
+        Object groundOverlaysToChange = call.argument("groundOverlaysToChange");
+        groundOverlaysController.changeGroundOverlays((List<Object>) groundOverlaysToChange);
+        Object groundOverlayIdsToRemove = call.argument("groundOverlayIdsToRemove");
+        groundOverlaysController.removeGroundOverlays((List<Object>) groundOverlayIdsToRemove);
+        result.success(null);
+        break;
+      }
       case "polylines#update":
         {
           Object polylinesToAdd = call.argument("polylinesToAdd");
@@ -398,6 +417,11 @@ final class GoogleMapController
   @Override
   public void onPolygonClick(Polygon polygon) {
     polygonsController.onPolygonTap(polygon.getId());
+  }
+
+  @Override
+  public void onGroundOverlayClick(GroundOverlay groundOverlay) {
+    groundOverlaysController.onGroundOverlayTap(groundOverlay.getId());
   }
 
   @Override
@@ -593,6 +617,18 @@ final class GoogleMapController
   }
 
   @Override
+  public void setInitialGroundOverlays(Object initialGroundOverlays) {
+    this.initialGroundOverlays = (List<Object>) initialGroundOverlays;
+    if (googleMap != null) {
+      updateInitialGroundOverlays();
+    }
+  }
+
+  private void updateInitialGroundOverlays() {
+    groundOverlaysController.addGroundOverlays(initialGroundOverlays);
+  }
+
+  @Override
   public void setInitialPolylines(Object initialPolylines) {
     this.initialPolylines = (List<Object>) initialPolylines;
     if (googleMap != null) {
@@ -651,4 +687,5 @@ final class GoogleMapController
   public void setIndoorEnabled(boolean indoorEnabled) {
     this.indoorEnabled = indoorEnabled;
   }
+
 }

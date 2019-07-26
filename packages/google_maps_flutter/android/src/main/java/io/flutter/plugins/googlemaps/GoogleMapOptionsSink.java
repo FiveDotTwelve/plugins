@@ -40,6 +40,8 @@ interface GoogleMapOptionsSink {
 
   void setInitialPolygons(Object initialPolygons);
 
+  void setInitialGroundOverlays(Object initialGroundOverlays);
+
   void setInitialPolylines(Object initialPolylines);
 
   void setInitialCircles(Object initialCircles);

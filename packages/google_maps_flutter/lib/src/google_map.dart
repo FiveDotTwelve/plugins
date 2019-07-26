@@ -37,6 +37,7 @@ class GoogleMap extends StatefulWidget {
     this.indoorViewEnabled = false,
     this.markers,
     this.polygons,
+    this.groundOverlays,
     this.polylines,
     this.circles,
     this.onCameraMoveStarted,
@@ -89,6 +90,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Polygons to be placed on the map.
   final Set<Polygon> polygons;
+
+  /// GroundOverlays to be placed on the map.
+  final Set<GroundOverlay> groundOverlays;
 
   /// Polylines to be placed on the map.
   final Set<Polyline> polylines;
@@ -185,6 +189,7 @@ class _GoogleMapState extends State<GoogleMap> {
 
   Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   Map<PolygonId, Polygon> _polygons = <PolygonId, Polygon>{};
+  Map<GroundOverlayId, GroundOverlay> _groundOverlays = <GroundOverlayId, GroundOverlay>{};
   Map<PolylineId, Polyline> _polylines = <PolylineId, Polyline>{};
   Map<CircleId, Circle> _circles = <CircleId, Circle>{};
   _GoogleMapOptions _googleMapOptions;
@@ -198,6 +203,7 @@ class _GoogleMapState extends State<GoogleMap> {
       'polygonsToAdd': _serializePolygonSet(widget.polygons),
       'polylinesToAdd': _serializePolylineSet(widget.polylines),
       'circlesToAdd': _serializeCircleSet(widget.circles),
+      'groundOverlaysToAdd': _serializeGroundOverlaySet(widget.groundOverlays),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
@@ -227,6 +233,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _googleMapOptions = _GoogleMapOptions.fromWidget(widget);
     _markers = _keyByMarkerId(widget.markers);
     _polygons = _keyByPolygonId(widget.polygons);
+    _groundOverlays= _keyByGroundOverlayId(widget.groundOverlays);
     _polylines = _keyByPolylineId(widget.polylines);
     _circles = _keyByCircleId(widget.circles);
   }
@@ -237,6 +244,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updateOptions();
     _updateMarkers();
     _updatePolygons();
+    _updateGroundOverlays();
     _updatePolylines();
     _updateCircles();
   }
@@ -265,6 +273,13 @@ class _GoogleMapState extends State<GoogleMap> {
     controller._updatePolygons(
         _PolygonUpdates.from(_polygons.values.toSet(), widget.polygons));
     _polygons = _keyByPolygonId(widget.polygons);
+  }
+
+  void _updateGroundOverlays() async {
+    final GoogleMapController controller = await _controller.future;
+    controller._updateGroundOverlays(
+        _GroundOverlayUpdates.from(_groundOverlays.values.toSet(), widget.groundOverlays));
+    _groundOverlays = _keyByGroundOverlayId(widget.groundOverlays);
   }
 
   void _updatePolylines() async {
@@ -305,6 +320,12 @@ class _GoogleMapState extends State<GoogleMap> {
     assert(polygonIdParam != null);
     final PolygonId polygonId = PolygonId(polygonIdParam);
     _polygons[polygonId].onTap();
+  }
+
+  void onGroundOverlayTap(String groundOverlayIdParam) {
+    assert(groundOverlayIdParam != null);
+    final GroundOverlayId groundOverlayId = GroundOverlayId(groundOverlayIdParam);
+    _groundOverlays[groundOverlayId].onTap();
   }
 
   void onPolylineTap(String polylineIdParam) {
