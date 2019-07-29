@@ -23,9 +23,9 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   PlacePolygonBodyState();
 
   GoogleMapController controller;
-  Map<GroundOverlayId, GroundOverlay> polygons = <GroundOverlayId, GroundOverlay>{};
+  Map<PolygonId, Polygon> polygons = <PolygonId, Polygon>{};
   int _polygonIdCounter = 1;
-  GroundOverlayId selectedGroundOverlay;
+  PolygonId selectedPolygon;
 
   // Values when toggling polygon color
   int strokeColorsIndex = 0;
@@ -50,18 +50,18 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     super.dispose();
   }
 
-  void _onGroundOverlayTapped(GroundOverlayId polygonId) {
+  void _onPolygonTapped(PolygonId polygonId) {
     setState(() {
-      selectedGroundOverlay = polygonId;
+      selectedPolygon = polygonId;
     });
   }
 
   void _remove() {
     setState(() {
-      if (polygons.containsKey(selectedGroundOverlay)) {
-        polygons.remove(selectedGroundOverlay);
+      if (polygons.containsKey(selectedPolygon)) {
+        polygons.remove(selectedPolygon);
       }
-      selectedGroundOverlay = null;
+      selectedPolygon = null;
     });
   }
 
@@ -74,17 +74,17 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
 
     final String polygonIdVal = 'polygon_id_$_polygonIdCounter';
     _polygonIdCounter++;
-    final GroundOverlayId polygonId = GroundOverlayId(polygonIdVal);
+    final PolygonId polygonId = PolygonId(polygonIdVal);
 
-    final GroundOverlay polygon = GroundOverlay(
-      groundOverlayId: polygonId,
+    final Polygon polygon = Polygon(
+      polygonId: polygonId,
       consumeTapEvents: true,
-      transparency: 0,
-      bearing: 0,
-      position: _createPosition(),
-      visible: true,
+      strokeColor: Colors.orange,
+      strokeWidth: 5,
+      fillColor: Colors.green,
+      points: _createPoints(),
       onTap: () {
-        _onGroundOverlayTapped(polygonId);
+        _onPolygonTapped(polygonId);
       },
     );
 
@@ -94,48 +94,48 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
   }
 
   void _toggleGeodesic() {
-//    final GroundOverlay polygon = polygons[selectedGroundOverlay];
-//    setState(() {
-//      polygons[selectedGroundOverlay] = polygon.copyWith(
-//        geodesicParam: !polygon.geodesic,
-//      );
-//    });
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        geodesicParam: !polygon.geodesic,
+      );
+    });
   }
 
   void _toggleVisible() {
-    final GroundOverlay polygon = polygons[selectedGroundOverlay];
+    final Polygon polygon = polygons[selectedPolygon];
     setState(() {
-      polygons[selectedGroundOverlay] = polygon.copyWith(
+      polygons[selectedPolygon] = polygon.copyWith(
         visibleParam: !polygon.visible,
       );
     });
   }
 
   void _changeStrokeColor() {
-//    final GroundOverlay polygon = polygons[selectedGroundOverlay];
-//    setState(() {
-//      polygons[selectedGroundOverlay] = polygon.copyWith(
-//        strokeColorParam: colors[++strokeColorsIndex % colors.length],
-//      );
-//    });
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        strokeColorParam: colors[++strokeColorsIndex % colors.length],
+      );
+    });
   }
 
   void _changeFillColor() {
-//    final GroundOverlay polygon = polygons[selectedGroundOverlay];
-//    setState(() {
-//      polygons[selectedGroundOverlay] = polygon.copyWith(
-//        fillColorParam: colors[++fillColorsIndex % colors.length],
-//      );
-//    });
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        fillColorParam: colors[++fillColorsIndex % colors.length],
+      );
+    });
   }
 
   void _changeWidth() {
-//    final GroundOverlay polygon = polygons[selectedGroundOverlay];
-//    setState(() {
-//      polygons[selectedGroundOverlay] = polygon.copyWith(
-//        strokeWidthParam: widths[++widthsIndex % widths.length],
-//      );
-//    });
+    final Polygon polygon = polygons[selectedPolygon];
+    setState(() {
+      polygons[selectedPolygon] = polygon.copyWith(
+        strokeWidthParam: widths[++widthsIndex % widths.length],
+      );
+    });
   }
 
   @override
@@ -153,7 +153,7 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                 target: LatLng(52.4478, -3.5402),
                 zoom: 7.0,
               ),
-              groundOverlays: Set<GroundOverlay>.of(polygons.values),
+              polygons: Set<Polygon>.of(polygons.values),
               onMapCreated: _onMapCreated,
             ),
           ),
@@ -173,16 +173,16 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                         ),
                         FlatButton(
                           child: const Text('remove'),
-                          onPressed: (selectedGroundOverlay == null) ? null : _remove,
+                          onPressed: (selectedPolygon == null) ? null : _remove,
                         ),
                         FlatButton(
                           child: const Text('toggle visible'),
                           onPressed:
-                              (selectedGroundOverlay == null) ? null : _toggleVisible,
+                              (selectedPolygon == null) ? null : _toggleVisible,
                         ),
                         FlatButton(
                           child: const Text('toggle geodesic'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedPolygon == null)
                               ? null
                               : _toggleGeodesic,
                         ),
@@ -193,17 +193,17 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
                         FlatButton(
                           child: const Text('change stroke width'),
                           onPressed:
-                              (selectedGroundOverlay == null) ? null : _changeWidth,
+                              (selectedPolygon == null) ? null : _changeWidth,
                         ),
                         FlatButton(
                           child: const Text('change stroke color'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedPolygon == null)
                               ? null
                               : _changeStrokeColor,
                         ),
                         FlatButton(
                           child: const Text('change fill color'),
-                          onPressed: (selectedGroundOverlay == null)
+                          onPressed: (selectedPolygon == null)
                               ? null
                               : _changeFillColor,
                         ),
@@ -219,9 +219,14 @@ class PlacePolygonBodyState extends State<PlacePolygonBody> {
     );
   }
 
-  LatLng _createPosition() {
+  List<LatLng> _createPoints() {
+    final List<LatLng> points = <LatLng>[];
     final double offset = _polygonIdCounter.ceilToDouble();
-    return _createLatLng(52.1231 + offset, -5.0829);
+    points.add(_createLatLng(51.2395 + offset, -3.4314));
+    points.add(_createLatLng(53.5234 + offset, -3.5314));
+    points.add(_createLatLng(52.4351 + offset, -4.5235));
+    points.add(_createLatLng(52.1231 + offset, -5.0829));
+    return points;
   }
 
   LatLng _createLatLng(double lat, double lng) {

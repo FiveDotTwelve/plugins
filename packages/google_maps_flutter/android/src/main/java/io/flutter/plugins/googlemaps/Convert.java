@@ -458,15 +458,14 @@ class Convert {
         if (position != null) {
             sink.setPosition(toPoint(position));
         }
-
-//        final Object image = data.get("image"); //todo
-//        if (image != null) {
-//            sink.setImage();
-//        }
-//        void setDimensions(float width, float height); //todo
-//
-//        void setPositionFromBounds(LatLngBounds bounds); //todo
-
+        final Object image = data.get("image");
+        if (image != null) {
+            sink.setImage(toBitmapDescriptor(image));
+        }
+        final Object latLngBounds = data.get("latLngBounds");
+        if (image != null) {
+            sink.setPositionFromBounds(toLatLngBounds(latLngBounds));
+        }
         final Object bearing = data.get("bearing");
         if (bearing != null) {
             sink.setBearing(toFloat(bearing));

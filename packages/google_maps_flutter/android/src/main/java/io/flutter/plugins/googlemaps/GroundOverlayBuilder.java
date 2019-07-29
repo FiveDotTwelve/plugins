@@ -29,7 +29,7 @@ class GroundOverlayBuilder implements GroundOverlayOptionsSink {
 
     @Override
     public void setPosition(LatLng position) {
-        groundOverlayOptions.position(position, 10f); //todo check second parameter
+        groundOverlayOptions.position(position, 0);
     }
 
     @Override
@@ -39,12 +39,10 @@ class GroundOverlayBuilder implements GroundOverlayOptionsSink {
 
     @Override
     public void setDimensions(float width) {
-        //todo
     }
 
     @Override
     public void setDimensions(float width, float height) {
-        //todo
     }
 
     @Override

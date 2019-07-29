@@ -34,12 +34,15 @@ class GroundOverlay {
     @required this.groundOverlayId,
     this.consumeTapEvents = false,
     this.position,
-    this.bearing,
-    this.zIndex = 0,
+    this.latLngBounds,
+    this.image = BitmapDescriptor.defaultMarker,
+    this.bearing = 0,
+    this.zIndex = 0.0,
     this.visible = true,
-    this.transparency = 1,
+    this.transparency = 0.0,
     this.onTap,
-  });
+  }) : assert(transparency == null ||
+            (0.0 <= transparency && transparency <= 1.0));
 
   /// Uniquely identifies a [GroundOverlay].
   final GroundOverlayId groundOverlayId;
@@ -49,24 +52,37 @@ class GroundOverlay {
   /// If this is false, [onTap] callback will not be triggered.
   final bool consumeTapEvents;
 
-  //todo description
+  /// Geographical location of the [GroundOverlay].
   final LatLng position;
 
-  //todo description
+  /// The geographical bounding box for the [GroundOverlay].
+  final LatLngBounds latLngBounds;
+
+  /// A description of the bitmap used to draw the groundOverlay.
+  final BitmapDescriptor image;
+
+  /// Specifies the bearing of the [GroundOverlay] in degrees clockwise from north.
+  /// The rotation is performed about the anchor point. If not specified, the default
+  /// is 0 (i.e., up on the image points north).
+  /// Note that latitude-longitude bound applies before the rotation.
+  /// The bearing in degrees clockwise from north. Values outside the range [0, 360)
+  /// will be normalized.
   final int bearing;
 
-  /// The z-index of the GroundOverlay, used to determine relative drawing order of
+  /// The z-index of the [GroundOverlay], used to determine relative drawing order of
   /// map overlays.
   ///
   /// Overlays are drawn in order of z-index, so that lower values means drawn
   /// earlier, and thus appearing to be closer to the surface of the Earth.
-  final int zIndex;
+  final double zIndex;
 
   /// True if the marker is visible.
   final bool visible;
 
-  //todo description
-  final int transparency;
+  /// The transparency of the [GroundOverlay], between 0.0 and 1.0 inclusive.
+  ///
+  /// 0.0 means fully opaque, 1.0 means fully transparent.
+  final double transparency;
 
   /// Callbacks to receive tap events for GroundOverlay placed on this map.
   final VoidCallback onTap;
@@ -76,16 +92,20 @@ class GroundOverlay {
   GroundOverlay copyWith({
     bool consumeTapEventsParam,
     LatLng positionParam,
+    LatLngBounds latLngBoundsParam,
+    BitmapDescriptor imageParam,
     int bearingParam,
-    int zIndexParam,
+    double zIndexParam,
     bool visibleParam,
-    int transparencyParam,
+    double transparencyParam,
     VoidCallback onTapParam,
   }) {
     return GroundOverlay(
       groundOverlayId: groundOverlayId,
       consumeTapEvents: consumeTapEventsParam ?? consumeTapEvents,
       position: positionParam ?? position,
+      latLngBounds: latLngBoundsParam ?? latLngBounds,
+      image: imageParam ?? image,
       bearing: bearingParam ?? bearing,
       zIndex: zIndexParam ?? zIndex,
       visible: visibleParam ?? visible,
@@ -105,15 +125,13 @@ class GroundOverlay {
 
     addIfPresent('groundOverlayId', groundOverlayId.value);
     addIfPresent('consumeTapEvents', consumeTapEvents);
+    addIfPresent('position', position?._toJson());
+    addIfPresent('latLngBounds', latLngBounds?._toList());
+    addIfPresent('image', image?._toJson());
     addIfPresent('bearing', bearing);
     addIfPresent('zIndex', zIndex);
     addIfPresent('visible', visible);
     addIfPresent('transparency', transparency);
-
-    if (position != null) {
-      json['position'] = _positionToJson();
-    }
-
     return json;
   }
 
@@ -127,10 +145,6 @@ class GroundOverlay {
 
   @override
   int get hashCode => groundOverlayId.hashCode;
-
-  dynamic _positionToJson() {
-    return position._toJson();
-  }
 }
 
 Map<GroundOverlayId, GroundOverlay> _keyByGroundOverlayId(

@@ -12,6 +12,7 @@ import 'move_camera.dart';
 import 'padding.dart';
 import 'page.dart';
 import 'place_circle.dart';
+import 'place_ground_overlay.dart';
 import 'place_marker.dart';
 import 'place_polygon.dart';
 import 'place_polyline.dart';
@@ -28,6 +29,7 @@ final List<Page> _allPages = <Page>[
   ScrollingMapPage(),
   PlacePolylinePage(),
   PlacePolygonPage(),
+  PlaceGroundOverlayPage(),
   PlaceCirclePage(),
   PaddingPage(),
 ];
