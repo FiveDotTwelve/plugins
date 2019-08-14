@@ -450,37 +450,31 @@ class Convert {
 
     static String interpretGroundOverlayOptions(Object o, GroundOverlayOptionsSink sink) {
         final Map<?, ?> data = toMap(o);
-        final Object consumeTapEvents = data.get("consumeTapEvents");
-        if (consumeTapEvents != null) {
-            sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+//        final Object consumeTapEvents = data.get("consumeTapEvents");
+//        if (consumeTapEvents != null) {
+//            sink.setConsumeTapEvents(toBoolean(consumeTapEvents));
+//        }
+//        final Object position = data.get("position");
+//        if (position != null) {
+//            sink.setPosition(toPoint(position));
+//        }
+        final Object imageObject = data.get("image");
+        if (imageObject != null) {
+            sink.setImage(toBitmapDescriptor(imageObject));
         }
-        final Object position = data.get("position");
-        if (position != null) {
-            sink.setPosition(toPoint(position));
+        final Object latLngBoundsObject = data.get("latLngBounds");
+        if (imageObject != null) {
+            LatLngBounds bounds = toLatLngBounds(latLngBoundsObject);
+            if (sink.getPositionFromBounds() == null || bounds.hashCode() != sink.getPositionFromBounds().hashCode()) {
+                sink.setPositionFromBounds(bounds);
+            }
         }
-        final Object image = data.get("image");
-        if (image != null) {
-            sink.setImage(toBitmapDescriptor(image));
-        }
-        final Object latLngBounds = data.get("latLngBounds");
-        if (image != null) {
-            sink.setPositionFromBounds(toLatLngBounds(latLngBounds));
-        }
-        final Object bearing = data.get("bearing");
-        if (bearing != null) {
-            sink.setBearing(toFloat(bearing));
-        }
-        final Object zIndex = data.get("zIndex");
-        if (zIndex != null) {
-            sink.setZIndex(toFloat(zIndex));
-        }
-        final Object visible = data.get("visible");
-        if (visible != null) {
-            sink.setVisible(toBoolean(visible));
-        }
-        final Object transparency = data.get("transparency");
-        if (transparency != null) {
-            sink.setTransparency(toFloat(transparency));
+        final Object transparencyObject = data.get("transparency");
+        if (transparencyObject != null) {
+            float transparency = toFloat(transparencyObject);
+            if (transparency != sink.getTransparency()) {
+                sink.setTransparency(transparency);
+            }
         }
         final String groundOverlayId = (String) data.get("groundOverlayId");
         if (groundOverlayId == null) {

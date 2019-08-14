@@ -171,6 +171,17 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
                               ? null
                               : _setRandomTransparency,
                         ),
+                        Slider(
+                            value: groundOverlays[selectedGroundOverlay]
+                                    ?.transparency ??
+                                0,
+                            onChanged: (value) => setState(() {
+                                  groundOverlays[selectedGroundOverlay] =
+                                      groundOverlays[selectedGroundOverlay]
+                                          .copyWith(
+                                    transparencyParam: value,
+                                  );
+                                }))
                       ],
                     )
                   ],
@@ -202,6 +213,6 @@ class PlaceGroundOverlayBodyState extends State<PlaceGroundOverlayBody> {
   }
 
   void _updateBitmap(BitmapDescriptor bitmap) {
-      _groundOverlayImage = bitmap;
+    _groundOverlayImage = bitmap;
   }
 }

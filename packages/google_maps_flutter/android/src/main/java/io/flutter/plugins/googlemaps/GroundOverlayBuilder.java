@@ -38,6 +38,11 @@ class GroundOverlayBuilder implements GroundOverlayOptionsSink {
     }
 
     @Override
+    public BitmapDescriptor getImage() {
+        return groundOverlayOptions.getImage();
+    }
+
+    @Override
     public void setDimensions(float width) {
     }
 
@@ -48,6 +53,11 @@ class GroundOverlayBuilder implements GroundOverlayOptionsSink {
     @Override
     public void setPositionFromBounds(LatLngBounds bounds) {
         groundOverlayOptions.positionFromBounds(bounds);
+    }
+
+    @Override
+    public LatLngBounds getPositionFromBounds() {
+        return groundOverlayOptions.getBounds();
     }
 
     @Override
@@ -64,6 +74,11 @@ class GroundOverlayBuilder implements GroundOverlayOptionsSink {
     @Override
     public void setTransparency(float transparency) {
         groundOverlayOptions.transparency(transparency);
+    }
+
+    @Override
+    public float getTransparency() {
+        return groundOverlayOptions.getTransparency();
     }
 
     @Override

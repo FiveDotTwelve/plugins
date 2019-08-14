@@ -4,26 +4,34 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-/** Receiver of GroundOverlay configuration options. */
+/**
+ * Receiver of GroundOverlay configuration options.
+ */
 interface GroundOverlayOptionsSink {
 
-  void setConsumeTapEvents(boolean consumetapEvents);
+    void setConsumeTapEvents(boolean consumetapEvents);
 
-  void setPosition(LatLng position);
+    void setPosition(LatLng position);
 
-  void setImage(BitmapDescriptor image);
+    void setImage(BitmapDescriptor image);
 
-  void setDimensions(float width);
+    BitmapDescriptor getImage();
 
-  void setDimensions(float width, float height);
+    void setDimensions(float width);
 
-  void setPositionFromBounds(LatLngBounds bounds);
+    void setDimensions(float width, float height);
 
-  void setBearing(float bearing);
+    void setPositionFromBounds(LatLngBounds bounds);
 
-  void setZIndex(float zIndex);
+    LatLngBounds getPositionFromBounds();
 
-  void setVisible(boolean visible);
+    void setBearing(float bearing);
 
-  void setTransparency(float transparency);
+    void setZIndex(float zIndex);
+
+    void setVisible(boolean visible);
+
+    void setTransparency(float transparency);
+
+    float getTransparency();
 }
